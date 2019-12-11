@@ -6,11 +6,11 @@ var hasorientationchange = false;
 //外部参数，如筛选器，联动参数，形如：[{name:'age',value:23}]
 var params = global.params;
 
-var date;
-var train;
-var value;
-var data_value;
-var data_overload;
+var date = [];
+var train = [];
+var value = [];
+var data_value = [];
+var data_overload = [];
 //console.log(echarts.version);
 
 //x轴坐标
@@ -25,13 +25,13 @@ var min = 0;
 /**
 * 渲染图形
 */
-function renderChart(data){
+function renderChart(data){  
    chart.setOption({
      	title:{
         	text: '地铁1号线2019年1~3月载荷分析结果',
         	textStyle: {
             	color: '#ffffff',
-              	fontSize: 24
+              	fontSize: 22
         	},
           	left: 'center'
     	},
@@ -57,7 +57,7 @@ function renderChart(data){
     },
     animation: true,
     grid: {
-        height: '80%',
+        height: '75%',
       	width: '85%',
       	x: '12%',
         y: '8%'
@@ -77,7 +77,7 @@ function renderChart(data){
         },
       	name: '日期',
         nameLocation: 'center',
-        nameGap: 80,
+        nameGap: 70,
       	nameTextStyle: {
             color: '#ffffff',
             fontSize: 15,
@@ -147,16 +147,17 @@ function renderChart(data){
                 }
             },
             itemStyle: {
-                color: '#000000'
-            },
-            emphasis: {
+                color: '#000000',
+              	emphasis: {
                 shadowBlur: 10,
                 shadowColor: 'rgba(0, 0, 0, 0.5)'
             }
+            },
         },
 		{
             name: '过载',
             type: 'scatter',
+          	symbol: 'image://http://223.99.13.54:9035/tempo/pictureNode/loadImage/designer/5bf5ae4006a143999dc3714f06f45fba',
           	symbolSize: function (val) {
                 return val[2] / 100;
             },
@@ -171,11 +172,17 @@ function renderChart(data){
 * @param {Object} data
 */
 global.init = function(data) {
+  	date = [];
+  	train = [];
+  	value = [];
+  	data_value = [];
+  	data_overload = [];
+  	xAxis = [];
+  	yAxis = [];
+
   	date = data.c0;
 	train = data.c1;
 	value = data.c2;
-  	data_value = [];
-  	data_overload = [];
   
   	//删除日期重复数据
   	for(var i = 0; i < date.length; i++){
@@ -191,6 +198,7 @@ global.init = function(data) {
 			 yAxis.push(train[i]);
 	   }
 	}
+  	yAxis = yAxis.sort();
   	
 	//根据坐标位置，填充车厢人数数据
 	for(var i = 0; i < date.length; i ++){
@@ -246,7 +254,76 @@ global.init = function(data) {
  * @param {Object} param 联动筛选的数据
  */
 global.update = function(data, param) {
-	renderChart(data);
+  	date = [];
+  	train = [];
+  	value = [];
+  	data_value = [];
+  	data_overload = [];
+  	xAxis = [];
+  	yAxis = [];
+  	
+  	date = data.c0;
+	train = data.c1;
+	value = data.c2;  	
+  
+  	//删除日期重复数据
+  	for(var i = 0; i < date.length; i++){
+	   if(xAxis.indexOf(date[i]) < 0){
+			 xAxis.push(date[i]);
+	   }
+ 	}
+  	xAxis = xAxis.sort();
+
+  	//删除列车号重复数据
+  	for(var i = 0; i < train.length; i++){
+	   if(yAxis.indexOf(train[i]) < 0){
+			 yAxis.push(train[i]);
+	   }
+	}
+  	yAxis = yAxis.sort();
+  
+  	if(param.length != 0){
+      	yAxis.length = 0;
+      	yAxis.push(param[0].value);
+    }
+  
+  	//根据坐标位置，填充车厢人数数据
+	for(var i = 0; i < date.length; i ++){
+		var temp = [];
+		temp.push(date[i]);
+		temp.push(train[i]);
+		temp.push(value[i]);
+		data_value.push(temp);
+	}
+  
+  	//根据坐标位置，填充过载数据
+  	for(var i = 0; i < date.length; i ++){
+      	var overload_value;
+      	var overload = value[i] - 8000;
+      	if(overload < 0){
+          	overload_value = 0;
+        }
+      	else{
+        	overload_value = overload;
+        }
+		var temp = [];
+		temp.push(date[i]);
+		temp.push(train[i]);
+		temp.push(overload_value);
+		data_overload.push(temp);
+	}  
+  
+  	//获得数据的值域范围
+  	max = value[0];
+	for(var i = 0; i < value.length - 1; i++){
+    	max = max < value[i + 1] ? value[i + 1] : max
+	}
+  	min = value[0];
+  	for(var i = 0; i < value.length - 1; i++){
+    	min = min > value[i + 1] ? value[i + 1] : min
+    }
+  	
+	renderChart(data_value);
 }
 
 /**

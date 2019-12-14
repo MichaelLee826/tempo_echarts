@@ -6,10 +6,15 @@ var hasorientationchange = false;
 //外部参数，如筛选器，联动参数，形如：[{name:'age',value:23}]
 var params = global.params;
 
+//日期
 var date = [];
+//列车号
 var train = [];
+//人数
 var value = [];
+//处理后的人数
 var data_value = [];
+//过载人数
 var data_overload = [];
 //console.log(echarts.version);
 
@@ -39,22 +44,23 @@ function renderChart(data){
         position: 'top',
         formatter: function (params) {
           	if(params.componentIndex == 0){
-              return '<p>日期：'+params.value[0]+'</p><p>列车号：'+params.value[1]+'</p><p>人数：'+params.value[2]+'</p>';
+              return '日期：'+params.value[0]+'<br />列车号：'+params.value[1]+'<br />人数：'+params.value[2];
             }
           	else{
-              return '<p>日期：'+params.value[0]+'</p><p>列车号：'+params.value[1]+'</p><p>超载人数：'+params.value[2]+'</p>';
+              return '日期：'+params.value[0]+'<br />列车号：'+params.value[1]+'<br />超载人数：'+params.value[2];
             }
         },
-        padding: [0, 15],
+        padding: [10, 10],
         confine: true,
-        transitionDuration: 1,
+        transitionDuration: 0.4,
         backgroundColor: '#123456aa',
         textStyle:{
           	color: '#ffffff',
-          	lineHeight: 30
         },
+        
         //extraCssText:'width:100px;height:100px'
     },
+     
     animation: true,
     grid: {
         height: '75%',
@@ -69,8 +75,26 @@ function renderChart(data){
         	show: false
         },
         splitArea: {
-            show: true
+            show: true,
+            areaStyle: {
+                color: [
+						"rgba(250,250,250,0.05)",
+						"rgba(200,200,200,0.02)"
+				]
+            }
         },
+      	/*
+      	splitLine: {
+			show: true,
+			lineStyle: {
+				color: [
+					"#eeeeee"
+				],
+				width: 1,
+				type: "solid"
+			}
+		},
+        */
       	axisLabel:{
             rotate: 45,
             color: '#ffffff'
@@ -90,7 +114,13 @@ function renderChart(data){
      	   	show: false
         },
         splitArea: {
-            show: true
+            show: true,
+            areaStyle: {
+                color: [
+						"rgba(250,250,250,0.05)",
+						"rgba(200,200,200,0.02)"
+				]
+            }
         },
       	axisLabel:{
             color: '#ffffff',

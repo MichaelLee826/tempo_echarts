@@ -303,7 +303,7 @@ global.update = function(data, param) {
 	   }
  	}
   	xAxis = xAxis.sort();
-
+  
   	//删除列车号重复数据
   	for(var i = 0; i < train.length; i++){
 	   if(yAxis.indexOf(train[i]) < 0){
@@ -313,10 +313,12 @@ global.update = function(data, param) {
   	yAxis = yAxis.sort();
   
   	if(param.length != 0){
-      	yAxis.length = 0;
-      	yAxis.push(param[0].value);
+      	if(param[0].name == '列车号'){
+        	yAxis.length = 0;
+      		yAxis.push(param[0].value);
+        }
     }
-  
+  	
   	//根据坐标位置，填充车厢人数数据
 	for(var i = 0; i < date.length; i ++){
 		var temp = [];

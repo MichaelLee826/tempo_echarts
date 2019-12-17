@@ -210,9 +210,9 @@ global.init = function(data) {
   	xAxis = [];
   	yAxis = [];
 
-  	date = data.c0;
-	train = data.c1;
-	value = data.c2;
+  	date = data.c0;		//日期
+	train = data.c1;	//列车号
+	value = data.c2;	//人数
   
   	//删除日期重复数据
   	for(var i = 0; i < date.length; i++){
@@ -269,6 +269,7 @@ global.init = function(data) {
   	//初始化图表
 	chart = echarts.init(body.querySelector("#echarts"));
 	renderChart(data_value);
+  
 	//对外发起联动
 	chart.on('click', function(param){
 		 global.postMessage({
@@ -319,42 +320,47 @@ global.update = function(data, param) {
         }
     }
   	
-  	//根据坐标位置，填充车厢人数数据
-	for(var i = 0; i < date.length; i ++){
-		var temp = [];
-		temp.push(date[i]);
-		temp.push(train[i]);
-		temp.push(value[i]);
-		data_value.push(temp);
-	}
-  
-  	//根据坐标位置，填充过载数据
-  	for(var i = 0; i < date.length; i ++){
-      	var overload_value;
-      	var overload = value[i] - 8000;
-      	if(overload < 0){
-          	overload_value = 0;
-        }
-      	else{
-        	overload_value = overload;
-        }
-		var temp = [];
-		temp.push(date[i]);
-		temp.push(train[i]);
-		temp.push(overload_value);
-		data_overload.push(temp);
-	}  
-  
-  	//获得数据的值域范围
-  	max = value[0];
-	for(var i = 0; i < value.length - 1; i++){
-    	max = max < value[i + 1] ? value[i + 1] : max
-	}
-  	min = value[0];
-  	for(var i = 0; i < value.length - 1; i++){
-    	min = min > value[i + 1] ? value[i + 1] : min
+  	if(date.length == 0){
+      	console.log('无数据');
     }
-  	
+  	else{
+    	//根据坐标位置，填充车厢人数数据
+        for(var i = 0; i < date.length; i ++){
+            var temp = [];
+            temp.push(date[i]);
+            temp.push(train[i]);
+            temp.push(value[i]);
+            data_value.push(temp);
+        }
+
+        //根据坐标位置，填充过载数据
+        for(var i = 0; i < date.length; i ++){
+            var overload_value;
+            var overload = value[i] - 8000;
+            if(overload < 0){
+                overload_value = 0;
+            }
+            else{
+                overload_value = overload;
+            }
+            var temp = [];
+            temp.push(date[i]);
+            temp.push(train[i]);
+            temp.push(overload_value);
+            data_overload.push(temp);
+        }
+  
+        //获得数据的值域范围
+        max = value[0];
+        for(var i = 0; i < value.length - 1; i++){
+            max = max < value[i + 1] ? value[i + 1] : max
+        }
+        min = value[0];
+        for(var i = 0; i < value.length - 1; i++){
+            min = min > value[i + 1] ? value[i + 1] : min
+        }
+
+    }
 	renderChart(data_value);
 }
 
